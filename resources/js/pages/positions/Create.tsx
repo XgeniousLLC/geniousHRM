@@ -67,13 +67,13 @@ export default function PositionCreate({ departments }: Props) {
 
                             <div className="space-y-1.5">
                                 <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Min Salary ($)</Label>
-                                <Input type="number" value={data.salary_min} onChange={(e) => setData('salary_min', e.target.value)} placeholder="0" min="0" step="1000" />
+                                <Input type="number" value={data.salary_min} onChange={(e) => setData('salary_min', e.target.value)} placeholder="0" min="0" step="1" />
                                 {errors.salary_min && <p className="text-xs text-red-500">{errors.salary_min}</p>}
                             </div>
 
                             <div className="space-y-1.5">
                                 <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Max Salary ($)</Label>
-                                <Input type="number" value={data.salary_max} onChange={(e) => setData('salary_max', e.target.value)} placeholder="0" min="0" step="1000" />
+                                <Input type="number" value={data.salary_max} onChange={(e) => setData('salary_max', e.target.value)} placeholder="0" min="0" step="1" />
                                 {errors.salary_max && <p className="text-xs text-red-500">{errors.salary_max}</p>}
                             </div>
 

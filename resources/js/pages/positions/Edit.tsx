@@ -70,12 +70,12 @@ export default function PositionEdit({ position, departments }: Props) {
 
                             <div className="space-y-1.5">
                                 <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Min Salary ($)</Label>
-                                <Input type="number" value={data.salary_min} onChange={(e) => setData('salary_min', e.target.value)} min="0" step="1000" />
+                                <Input type="number" value={data.salary_min} onChange={(e) => setData('salary_min', e.target.value)} min="0" step="1" />
                             </div>
 
                             <div className="space-y-1.5">
                                 <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Max Salary ($)</Label>
-                                <Input type="number" value={data.salary_max} onChange={(e) => setData('salary_max', e.target.value)} min="0" step="1000" />
+                                <Input type="number" value={data.salary_max} onChange={(e) => setData('salary_max', e.target.value)} min="0" step="1" />
                             </div>
 
                             <div className="sm:col-span-2 space-y-1.5">
