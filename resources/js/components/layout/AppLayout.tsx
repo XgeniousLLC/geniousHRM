@@ -22,7 +22,6 @@ import {
     Clock,
     CalendarDays,
 } from 'lucide-react';
-import { useState } from 'react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -166,10 +165,11 @@ function ThemeToggle() {
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <button className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <Icon size={18} />
-                </button>
+            <DropdownMenuTrigger
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                aria-label="Toggle theme"
+            >
+                <Icon size={18} />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
                 {themeOptions.map(({ value, icon: ItemIcon, label }) => (
@@ -218,19 +218,17 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
 
                 {/* User menu */}
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                            <Avatar className="h-7 w-7">
-                                <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
-                                    {initials}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="text-left hidden sm:block">
-                                <p className="text-sm font-medium text-slate-900 dark:text-white leading-none">{user?.name}</p>
-                                <p className="text-xs text-slate-400 mt-0.5">{user?.roles?.[0] ?? 'User'}</p>
-                            </div>
-                            <ChevronDown size={14} className="text-slate-400" />
-                        </button>
+                    <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <Avatar className="h-7 w-7">
+                            <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
+                                {initials}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="text-left hidden sm:block">
+                            <p className="text-sm font-medium text-slate-900 dark:text-white leading-none">{user?.name}</p>
+                            <p className="text-xs text-slate-400 mt-0.5">{user?.roles?.[0] ?? 'User'}</p>
+                        </div>
+                        <ChevronDown size={14} className="text-slate-400" />
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end" className="w-52">
@@ -239,20 +237,22 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
                             <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild>
-                            <Link href="/profile" className="cursor-pointer">
-                                <User size={14} className="mr-2" /> Profile Settings
-                            </Link>
+                        <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => router.visit('/profile')}
+                        >
+                            <User size={14} className="mr-2" /> Profile Settings
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/profile/password" className="cursor-pointer">
-                                <KeyRound size={14} className="mr-2" /> Change Password
-                            </Link>
+                        <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => router.visit('/profile/password')}
+                        >
+                            <KeyRound size={14} className="mr-2" /> Change Password
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             onClick={logout}
-                            className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                            className="text-red-600 cursor-pointer"
                         >
                             <LogOut size={14} className="mr-2" /> Sign out
                         </DropdownMenuItem>
