@@ -1,15 +1,24 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes — GeniusHRM (Inertia SPA)
-|--------------------------------------------------------------------------
-| All web routes serve the Inertia SPA. The React frontend handles routing.
-| API routes are in routes/api.php.
-*/
+// Auth routes (guest only)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
-Route::get('/{any}', function () {
-    return inertia('Home');
-})->where('any', '.*');
+// Authenticated routes
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
+    Route::get('/', fn () => redirect()->route('dashboard'));
+
+    // Catch-all for SPA navigation — must stay last
+    Route::get('/{any}', fn () => Inertia::render('Dashboard'))
+        ->where('any', '^(?!api).*')
+        ->name('spa');
+});
