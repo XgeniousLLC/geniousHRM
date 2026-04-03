@@ -27,9 +27,4 @@ Route::middleware('auth')->group(function () {
 
     // Module 02: Employees
     Route::resource('employees', EmployeeController::class);
-
-    // Catch-all for SPA navigation — must stay last
-    Route::get('/{any}', fn () => Inertia::render('Dashboard'))
-        ->where('any', '^(?!api).*')
-        ->name('spa');
 });
