@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmploymentHistory extends Model
 {
+    protected $table = 'employment_history';
+
     public $timestamps = false;
 
     protected $fillable = ['employee_id', 'field_name', 'old_value', 'new_value', 'changed_by', 'changed_at'];
