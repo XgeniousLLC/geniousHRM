@@ -9,6 +9,7 @@ import {
     CreditCard,
     FileText,
     LayoutDashboard,
+    KeyRound,
     LogOut,
     Monitor,
     Moon,
@@ -240,12 +241,12 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                             <Link href="/profile" className="cursor-pointer">
-                                <User size={14} className="mr-2" /> My Profile
+                                <User size={14} className="mr-2" /> Profile Settings
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                            <Link href="/admin/settings" className="cursor-pointer">
-                                <Settings size={14} className="mr-2" /> Settings
+                            <Link href="/profile/password" className="cursor-pointer">
+                                <KeyRound size={14} className="mr-2" /> Change Password
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
