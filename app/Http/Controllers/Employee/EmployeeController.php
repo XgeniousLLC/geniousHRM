@@ -16,8 +16,8 @@ class EmployeeController extends Controller
 {
     public function index(Request $request): Response
     {
-        $employees = Employee::query()
-            ->with(['department', 'position', 'reportingManager'])
+        $paginator = Employee::query()
+            ->with(['department', 'position'])
             ->when($request->search, fn ($q, $s) =>
                 $q->where(fn ($q) =>
                     $q->where('first_name', 'like', "%{$s}%")
@@ -29,14 +29,29 @@ class EmployeeController extends Controller
             ->when($request->department, fn ($q, $d) => $q->where('department_id', $d))
             ->when($request->position, fn ($q, $p) => $q->where('position_id', $p))
             ->when($request->status, fn ($q, $s) => $q->where('employment_status', $s))
-            ->when($request->sort, fn ($q, $sort) =>
-                $q->orderBy($sort, $request->direction ?? 'asc')
-            , fn ($q) => $q->orderBy('first_name'))
+            ->when($request->sort,
+                fn ($q, $sort) => $q->orderBy($sort, $request->direction ?? 'asc'),
+                fn ($q)        => $q->orderBy('first_name')
+            )
             ->paginate($request->per_page ?? 25)
             ->withQueryString();
 
         return Inertia::render('employees/Index', [
-            'employees'   => $employees,
+            'employees' => [
+                'data'  => $paginator->items(),
+                'meta'  => [
+                    'current_page' => $paginator->currentPage(),
+                    'last_page'    => $paginator->lastPage(),
+                    'per_page'     => $paginator->perPage(),
+                    'total'        => $paginator->total(),
+                    'from'         => $paginator->firstItem() ?? 0,
+                    'to'           => $paginator->lastItem() ?? 0,
+                ],
+                'links' => [
+                    'prev' => $paginator->previousPageUrl(),
+                    'next' => $paginator->nextPageUrl(),
+                ],
+            ],
             'departments' => Department::orderBy('name')->get(['id', 'name']),
             'positions'   => Position::orderBy('name')->get(['id', 'name']),
             'filters'     => $request->only(['search', 'department', 'position', 'status', 'sort', 'direction', 'per_page']),
