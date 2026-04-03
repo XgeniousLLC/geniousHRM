@@ -48,7 +48,7 @@ const navItems = [
         items: [
             { label: 'Employees', href: '/employees', icon: Users },
             { label: 'Departments', href: '/departments', icon: Building2 },
-            { label: 'Org Chart', href: '/org-chart', icon: Building2 },
+            { label: 'Positions',   href: '/positions',   icon: Briefcase },
         ],
     },
     {

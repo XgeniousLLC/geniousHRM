@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Employee\EmployeeController;
+use App\Http\Controllers\Organization\DepartmentController;
+use App\Http\Controllers\Organization\PositionController;
 use App\Http\Controllers\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,4 +29,8 @@ Route::middleware('auth')->group(function () {
 
     // Module 02: Employees
     Route::resource('employees', EmployeeController::class);
+
+    // Module 03: Organizational Structure
+    Route::resource('departments', DepartmentController::class);
+    Route::resource('positions', PositionController::class)->except(['show']);
 });
