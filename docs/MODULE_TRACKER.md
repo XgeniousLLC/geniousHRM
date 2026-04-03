@@ -23,8 +23,8 @@
 |---|--------|--------|----------|-------|------------|-----|
 | 00 | Laravel Core Setup | `✅ COMPLETED` | CRITICAL | 1 | — | [00-laravel-core-setup.md](modules/00-laravel-core-setup.md) |
 | 01 | Authentication & Authorization | `✅ COMPLETED` | CRITICAL | 1 | 00 | [01-authentication.md](modules/01-authentication.md) |
-| 02 | Employee Management | `🔄 IN PROGRESS` | HIGH | 1 | 01 | [02-employee-management.md](modules/02-employee-management.md) |
-| 03 | Organizational Structure | `⬜ NOT STARTED` | HIGH | 1 | 02 | [03-organizational-structure.md](modules/03-organizational-structure.md) |
+| 02 | Employee Management | `✅ COMPLETED` | HIGH | 1 | 01 | [02-employee-management.md](modules/02-employee-management.md) |
+| 03 | Organizational Structure | `🔄 IN PROGRESS` | HIGH | 1 | 02 | [03-organizational-structure.md](modules/03-organizational-structure.md) |
 | 04 | Attendance & Shift Management | `⬜ NOT STARTED` | HIGH | 2 | 02 | [04-attendance-shift.md](modules/04-attendance-shift.md) |
 | 05 | Leave Management | `⬜ NOT STARTED` | HIGH | 2 | 02, 04 | [05-leave-management.md](modules/05-leave-management.md) |
 | 06 | Recruitment & ATS | `⬜ NOT STARTED` | MEDIUM-HIGH | 3 | 01, 02 | [06-recruitment-ats.md](modules/06-recruitment-ats.md) |
@@ -41,7 +41,7 @@
 
 | Phase | Weeks | Modules | Goal |
 |-------|-------|---------|------|
-| **Phase 1** | 1–4 | 00 ✅, 01 ✅, 02 🔄, 03 | Foundation & Core HR |
+| **Phase 1** | 1–4 | 00 ✅, 01 ✅, 02 ✅, 03 🔄 | Foundation & Core HR |
 | **Phase 2** | 5–8 | 04, 05 | Attendance & Leave Management |
 | **Phase 3** | 9–12 | 06 | Recruitment & ATS |
 | **Phase 4** | 13–16 | 07 | Payroll & Compensation |
@@ -66,6 +66,16 @@
 - Dashboard page with AppLayout (sidebar + header + user menu)
 - 4 demo accounts: admin / hr / manager / employee @geniushrm.test (Admin@1234)
 
+### Module 02 — Employee Management ✅
+- Full CRUD: create, view, edit, soft-delete (sets Terminated status first)
+- Auto-generated employee IDs (EMP-001 format, gap-safe with withTrashed)
+- Employment history auto-tracked via model observer (6 tracked fields)
+- Documents table (employee_documents) — upload-ready schema
+- Employee Index: paginated list, search (name/email/ID), filter (dept/position/status)
+- Employee Show: tabbed view (Overview, Documents, History), confirm-delete flow
+- Employee Form: reusable component, positions filtered by selected department
+- Dark/light/system theme toggle in header (localStorage-persisted, flash-free)
+
 ---
 
 ## Regional Features (Future — After Phase 4)
@@ -79,6 +89,6 @@
 
 ## Quick Stats
 
-- **Completed:** 2 / 13
+- **Completed:** 3 / 13
 - **In Progress:** 1 / 13
-- **Not Started:** 10 / 13
+- **Not Started:** 9 / 13

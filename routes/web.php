@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Employee\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -16,6 +17,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
     Route::get('/', fn () => redirect()->route('dashboard'));
+
+    // Module 02: Employees
+    Route::resource('employees', EmployeeController::class);
 
     // Catch-all for SPA navigation — must stay last
     Route::get('/{any}', fn () => Inertia::render('Dashboard'))

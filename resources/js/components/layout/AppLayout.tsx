@@ -10,9 +10,12 @@ import {
     FileText,
     LayoutDashboard,
     LogOut,
+    Monitor,
+    Moon,
     Settings,
     Shield,
     Star,
+    Sun,
     User,
     Users,
     Clock,
@@ -21,7 +24,6 @@ import {
 import { useState } from 'react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,6 +34,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { useTheme, type Theme } from '@/hooks/useTheme';
 import type { PageProps } from '@/types';
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
@@ -86,14 +89,14 @@ const navItems = [
 
 function Sidebar({ currentPath }: { currentPath: string }) {
     return (
-        <aside className="flex h-screen w-60 flex-col border-r border-slate-200 bg-white">
+        <aside className="flex h-screen w-60 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             {/* Brand */}
-            <div className="flex h-16 items-center gap-3 px-5 border-b border-slate-100">
+            <div className="flex h-16 items-center gap-3 px-5 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-sm">
                     <span className="text-white text-sm font-bold">G</span>
                 </div>
                 <div>
-                    <p className="font-semibold text-slate-900 text-sm leading-none">GeniusHRM</p>
+                    <p className="font-semibold text-slate-900 dark:text-white text-sm leading-none">GeniusHRM</p>
                     <p className="text-slate-400 text-xs mt-0.5">HR Management</p>
                 </div>
             </div>
@@ -115,13 +118,13 @@ function Sidebar({ currentPath }: { currentPath: string }) {
                                             className={cn(
                                                 'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
                                                 active
-                                                    ? 'bg-blue-50 text-blue-700'
-                                                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900',
+                                                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white',
                                             )}
                                         >
                                             <Icon
                                                 size={16}
-                                                className={active ? 'text-blue-600' : 'text-slate-400'}
+                                                className={active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}
                                             />
                                             {label}
                                         </Link>
@@ -134,16 +137,51 @@ function Sidebar({ currentPath }: { currentPath: string }) {
             </nav>
 
             {/* Bottom settings link */}
-            <div className="border-t border-slate-100 p-3">
+            <div className="border-t border-slate-100 dark:border-slate-800 p-3">
                 <Link
                     href="/admin/settings"
-                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
                 >
                     <Settings size={16} />
                     Settings
                 </Link>
             </div>
         </aside>
+    );
+}
+
+// ─── Theme Toggle ─────────────────────────────────────────────────────────────
+
+const themeOptions: { value: Theme; icon: React.ElementType; label: string }[] = [
+    { value: 'light',  icon: Sun,     label: 'Light'  },
+    { value: 'dark',   icon: Moon,    label: 'Dark'   },
+    { value: 'system', icon: Monitor, label: 'System' },
+];
+
+function ThemeToggle() {
+    const { theme, setTheme } = useTheme();
+    const current = themeOptions.find((t) => t.value === theme) ?? themeOptions[2];
+    const Icon = current.icon;
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <button className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <Icon size={18} />
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36">
+                {themeOptions.map(({ value, icon: ItemIcon, label }) => (
+                    <DropdownMenuItem
+                        key={value}
+                        onClick={() => setTheme(value)}
+                        className={cn('cursor-pointer gap-2', theme === value && 'font-semibold text-blue-600')}
+                    >
+                        <ItemIcon size={14} /> {label}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 }
 
@@ -162,13 +200,15 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
         .slice(0, 2) ?? 'U';
 
     return (
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-            {/* Page title slot — rendered via context/prop in real impl */}
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6">
             <div />
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+                {/* Theme toggle */}
+                <ThemeToggle />
+
                 {/* Notifications */}
-                <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
+                <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                     <Bell size={18} />
                     <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
                 </button>
@@ -178,14 +218,14 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
                 {/* User menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <button className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-slate-100 transition-colors">
+                        <button className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                             <Avatar className="h-7 w-7">
                                 <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
                                     {initials}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="text-left hidden sm:block">
-                                <p className="text-sm font-medium text-slate-900 leading-none">{user?.name}</p>
+                                <p className="text-sm font-medium text-slate-900 dark:text-white leading-none">{user?.name}</p>
                                 <p className="text-xs text-slate-400 mt-0.5">{user?.roles?.[0] ?? 'User'}</p>
                             </div>
                             <ChevronDown size={14} className="text-slate-400" />
@@ -225,11 +265,11 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
 // ─── AppLayout ────────────────────────────────────────────────────────────────
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-    const { auth, url } = usePage<PageProps & { url: string }>().props;
+    const { auth } = usePage<PageProps>().props;
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard';
 
     return (
-        <div className="flex h-screen overflow-hidden bg-slate-50">
+        <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
             <Sidebar currentPath={currentPath} />
             <div className="flex flex-1 flex-col overflow-hidden">
                 <Header user={auth.user} />

@@ -9,6 +9,13 @@
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.tsx'])
         @inertiaHead
+        <script>
+            (function() {
+                var theme = localStorage.getItem('hrm-theme') || 'system';
+                var dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                document.documentElement.classList.add(dark ? 'dark' : 'light');
+            })();
+        </script>
     </head>
     <body class="font-sans antialiased">
         @inertia
