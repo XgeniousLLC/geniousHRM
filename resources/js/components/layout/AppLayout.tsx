@@ -23,7 +23,6 @@ import {
     CalendarDays,
 } from 'lucide-react';
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -32,7 +31,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 import type { PageProps } from '@/types';
@@ -214,16 +212,15 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
                     <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
                 </button>
 
-                <Separator orientation="vertical" className="h-6" />
+                {/* Divider */}
+                <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />
 
                 {/* User menu */}
                 <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <Avatar className="h-7 w-7">
-                            <AvatarFallback className="bg-blue-600 text-white text-xs font-semibold">
-                                {initials}
-                            </AvatarFallback>
-                        </Avatar>
+                        <div className="h-7 w-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                            {initials}
+                        </div>
                         <div className="text-left hidden sm:block">
                             <p className="text-sm font-medium text-slate-900 dark:text-white leading-none">{user?.name}</p>
                             <p className="text-xs text-slate-400 mt-0.5">{user?.roles?.[0] ?? 'User'}</p>
