@@ -27,7 +27,6 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -229,11 +228,11 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="end" className="w-52">
-                        <DropdownMenuLabel className="font-normal">
-                            <p className="font-medium text-sm">{user?.name}</p>
+                        {/* User info header — plain div, NOT DropdownMenuLabel (requires Menu.Group parent) */}
+                        <div className="px-2 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
+                            <p className="font-medium text-sm text-slate-900 dark:text-white">{user?.name}</p>
                             <p className="text-xs text-slate-500 mt-0.5">{user?.email}</p>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                        </div>
                         <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={() => router.visit('/profile')}
