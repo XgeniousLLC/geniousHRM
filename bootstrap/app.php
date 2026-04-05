@@ -50,4 +50,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['success' => false, 'message' => 'Resource not found.'], 404);
             }
         });
+
+        // 403 — render Inertia forbidden page for web requests
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Forbidden.'], 403);
+            }
+            return inertia('errors/403')->toResponse($request)->setStatusCode(403);
+        });
     })->create();

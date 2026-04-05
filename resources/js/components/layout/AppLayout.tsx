@@ -34,58 +34,58 @@ import { cn } from '@/lib/utils';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 import type { AppNotification, PageProps } from '@/types';
 
-// ─── Nav config ───────────────────────────────────────────────────────────────
+// ─── Nav config (permission-gated) ────────────────────────────────────────────
 
-const navItems = [
+const NAV_CONFIG = [
     {
         group: 'Main',
         items: [
-            { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+            { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, permission: null },
         ],
     },
     {
         group: 'People',
         items: [
-            { label: 'Employees', href: '/employees', icon: Users },
-            { label: 'Departments', href: '/departments', icon: Building2 },
-            { label: 'Positions',   href: '/positions',   icon: Briefcase },
+            { label: 'Employees',   href: '/employees',   icon: Users,     permission: 'employees.view' },
+            { label: 'Departments', href: '/departments', icon: Building2, permission: 'departments.view' },
+            { label: 'Positions',   href: '/positions',   icon: Briefcase, permission: 'departments.view' },
         ],
     },
     {
         group: 'Time & Leave',
         items: [
-            { label: 'Attendance', href: '/attendance', icon: Clock },
-            { label: 'Leave Management', href: '/leaves', icon: CalendarDays },
+            { label: 'Attendance',        href: '/attendance', icon: Clock,        permission: 'attendance.view' },
+            { label: 'Leave Management',  href: '/leaves',     icon: CalendarDays, permission: 'leaves.view' },
         ],
     },
     {
         group: 'Talent',
         items: [
-            { label: 'Recruitment', href: '/recruitment', icon: Briefcase  },
-            { label: 'Performance', href: '/performance', icon: Star },
-            { label: 'Training', href: '/training', icon: BookOpen },
+            { label: 'Recruitment', href: '/recruitment', icon: Briefcase, permission: 'recruitment.view' },
+            { label: 'Performance', href: '/performance', icon: Star,      permission: 'performance.view' },
+            { label: 'Training',    href: '/training',    icon: BookOpen,  permission: 'training.view' },
         ],
     },
     {
         group: 'Finance',
         items: [
-            { label: 'Payroll', href: '/payroll', icon: CreditCard },
+            { label: 'Payroll', href: '/payroll', icon: CreditCard, permission: 'payroll.view' },
         ],
     },
     {
         group: 'System',
         items: [
-            { label: 'Documents', href: '/documents', icon: FileText },
-            { label: 'Reports', href: '/reports', icon: BarChart3 },
+            { label: 'Documents', href: '/documents', icon: FileText,  permission: 'documents.view' },
+            { label: 'Reports',   href: '/reports',   icon: BarChart3, permission: 'reports.view' },
         ],
     },
     {
         group: 'Administration',
         items: [
-            { label: 'Settings',            href: '/admin/settings',   icon: Settings },
-            { label: 'Users',               href: '/admin/users',      icon: Users },
-            { label: 'Roles & Permissions', href: '/admin/roles',      icon: Shield },
-            { label: 'Audit Log',           href: '/admin/audit-log',  icon: BarChart3 },
+            { label: 'Settings',            href: '/admin/settings',   icon: Settings,  permission: 'admin.settings' },
+            { label: 'Users',               href: '/admin/users',      icon: Users,     permission: 'admin.users' },
+            { label: 'Roles & Permissions', href: '/admin/roles',      icon: Shield,    permission: 'admin.roles' },
+            { label: 'Audit Log',           href: '/admin/audit-log',  icon: BarChart3, permission: 'admin.audit-logs' },
         ],
     },
 ];
@@ -93,26 +93,25 @@ const navItems = [
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 function Sidebar({ currentPath }: { currentPath: string }) {
-    const { app_settings } = usePage().props as any;
-    const appName = app_settings?.app_name ?? 'GeniusHRM';
+    const page = usePage<PageProps>().props;
+    const { app_settings } = page as any;
+    const permissions: string[] = (page.auth?.user as any)?.permissions ?? [];
+
+    const appName       = app_settings?.app_name ?? 'GeniusHRM';
     const footerCopyright = app_settings?.footer_copyright ?? `© ${new Date().getFullYear()} GeniusHRM. All rights reserved.`;
-    const logoPath = app_settings?.logo_path;
+    const logoPath      = app_settings?.logo_path;
+
+    const can = (permission: string | null) => !permission || permissions.includes(permission);
 
     return (
         <aside className="flex h-screen w-60 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             {/* Brand */}
             <div className="flex h-16 items-center gap-3 px-5 border-b border-slate-100 dark:border-slate-800">
                 {logoPath ? (
-                    <img
-                        src={`/storage/${logoPath}`}
-                        alt={appName}
-                        className="h-7 w-auto object-contain flex-shrink-0"
-                    />
+                    <img src={`/storage/${logoPath}`} alt={appName} className="h-7 w-auto object-contain flex-shrink-0" />
                 ) : (
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-sm flex-shrink-0">
-                        <span className="text-white text-sm font-bold">
-                            {appName.charAt(0).toUpperCase()}
-                        </span>
+                        <span className="text-white text-sm font-bold">{appName.charAt(0).toUpperCase()}</span>
                     </div>
                 )}
                 <div className="min-w-0">
@@ -123,37 +122,38 @@ function Sidebar({ currentPath }: { currentPath: string }) {
 
             {/* Nav */}
             <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-5">
-                {navItems.map((group) => (
-                    <div key={group.group}>
-                        <p className="px-2 mb-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                            {group.group}
-                        </p>
-                        <ul className="space-y-0.5">
-                            {group.items.map(({ label, href, icon: Icon }) => {
-                                const active = currentPath === href || currentPath.startsWith(href + '/');
-                                return (
-                                    <li key={href}>
-                                        <Link
-                                            href={href}
-                                            className={cn(
-                                                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
-                                                active
-                                                    ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white',
-                                            )}
-                                        >
-                                            <Icon
-                                                size={16}
-                                                className={active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}
-                                            />
-                                            {label}
-                                        </Link>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-                ))}
+                {NAV_CONFIG.map((group) => {
+                    const visibleItems = group.items.filter(item => can(item.permission));
+                    if (visibleItems.length === 0) return null;
+                    return (
+                        <div key={group.group}>
+                            <p className="px-2 mb-1 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                                {group.group}
+                            </p>
+                            <ul className="space-y-0.5">
+                                {visibleItems.map(({ label, href, icon: Icon }) => {
+                                    const active = currentPath === href || currentPath.startsWith(href + '/');
+                                    return (
+                                        <li key={href}>
+                                            <Link
+                                                href={href}
+                                                className={cn(
+                                                    'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors',
+                                                    active
+                                                        ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-400'
+                                                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white',
+                                                )}
+                                            >
+                                                <Icon size={16} className={active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'} />
+                                                {label}
+                                            </Link>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+                    );
+                })}
             </nav>
 
             {/* Footer copyright */}
