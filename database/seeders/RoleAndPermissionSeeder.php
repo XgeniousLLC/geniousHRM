@@ -76,8 +76,6 @@ class RoleAndPermissionSeeder extends Seeder
                 'leaves.view', 'leaves.apply',
                 'performance.view',
                 'training.view',
-                'documents.view',
-                'reports.view',
             ],
 
             'Recruiter' => [
