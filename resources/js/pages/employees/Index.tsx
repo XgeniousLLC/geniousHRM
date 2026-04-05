@@ -105,7 +105,7 @@ export default function EmployeeIndex({ employees, departments, positions, filte
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-900">Employees</h1>
+                        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Employees</h1>
                         <p className="text-sm text-slate-500 mt-0.5">
                             {employees.meta.total} total employees
                         </p>
@@ -241,14 +241,14 @@ export default function EmployeeIndex({ employees, departments, positions, filte
                                                         {initials(emp)}
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-slate-900">{emp.first_name} {emp.last_name}</p>
+                                                        <p className="font-medium text-slate-900 dark:text-white">{emp.first_name} {emp.last_name}</p>
                                                         <p className="text-xs text-slate-500">{emp.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-4 py-3 text-slate-600 font-mono text-xs">{emp.employee_id}</td>
-                                            <td className="px-4 py-3 text-slate-600">{emp.department?.name ?? '—'}</td>
-                                            <td className="px-4 py-3 text-slate-600">{emp.position?.name ?? '—'}</td>
+                                            <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{emp.department?.name ?? '—'}</td>
+                                            <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{emp.position?.name ?? '—'}</td>
                                             <td className="px-4 py-3 text-slate-500 text-xs">
                                                 {emp.date_of_joining
                                                     ? new Date(emp.date_of_joining).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })

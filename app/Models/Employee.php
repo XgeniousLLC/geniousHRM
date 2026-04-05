@@ -64,6 +64,21 @@ class Employee extends Model
         return $this->hasMany(EmploymentHistory::class)->orderByDesc('changed_at');
     }
 
+    public function salaries(): HasMany
+    {
+        return $this->hasMany(EmployeeSalary::class)->orderByDesc('effective_date');
+    }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function latestSalary()
+    {
+        return $this->hasOne(EmployeeSalary::class)->latestOfMany('effective_date');
+    }
+
     protected static function booted(): void
     {
         static::updating(function (Employee $employee) {

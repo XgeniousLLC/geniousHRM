@@ -51,6 +51,25 @@ class HandleInertiaRequests extends Middleware
                 'error'   => fn () => $request->session()->get('error'),
                 'info'    => fn () => $request->session()->get('info'),
             ],
+            'notifications' => fn () => $request->user()
+                ? $request->user()->unreadNotifications->take(15)->map(fn ($n) => [
+                    'id'         => $n->id,
+                    'title'      => $n->data['title'] ?? 'Notification',
+                    'message'    => $n->data['message'] ?? '',
+                    'url'        => $n->data['url'] ?? null,
+                    'created_at' => $n->created_at->diffForHumans(),
+                ])->values()
+                : [],
+            'unread_count' => fn () => $request->user()
+                ? $request->user()->unreadNotifications()->count()
+                : 0,
+            'app_settings' => function () {
+                return [
+                    'app_name'         => \Modules\SystemAdmin\app\Models\SystemSetting::get('app_name', 'GeniusHRM'),
+                    'footer_copyright' => \Modules\SystemAdmin\app\Models\SystemSetting::get('footer_copyright', '© ' . date('Y') . ' GeniusHRM. All rights reserved.'),
+                    'logo_path'        => \Modules\SystemAdmin\app\Models\SystemSetting::get('logo_path'),
+                ];
+            },
         ];
     }
 }

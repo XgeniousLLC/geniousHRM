@@ -25,15 +25,15 @@
 | 01 | Authentication & Authorization | `✅ COMPLETED` | CRITICAL | 1 | 00 | [01-authentication.md](modules/01-authentication.md) |
 | 02 | Employee Management | `✅ COMPLETED` | HIGH | 1 | 01 | [02-employee-management.md](modules/02-employee-management.md) |
 | 03 | Organizational Structure | `✅ COMPLETED` | HIGH | 1 | 02 | [03-organizational-structure.md](modules/03-organizational-structure.md) |
-| 04 | Attendance & Shift Management | `⬜ NOT STARTED` | HIGH | 2 | 02 | [04-attendance-shift.md](modules/04-attendance-shift.md) |
-| 05 | Leave Management | `⬜ NOT STARTED` | HIGH | 2 | 02, 04 | [05-leave-management.md](modules/05-leave-management.md) |
-| 06 | Recruitment & ATS | `⬜ NOT STARTED` | MEDIUM-HIGH | 3 | 01, 02 | [06-recruitment-ats.md](modules/06-recruitment-ats.md) |
-| 07 | Payroll & Compensation | `⬜ NOT STARTED` | CRITICAL | 4 | 02, 04 | [07-payroll-compensation.md](modules/07-payroll-compensation.md) |
-| 08 | Performance Management | `⬜ NOT STARTED` | MEDIUM | 5 | 02 | [08-performance-management.md](modules/08-performance-management.md) |
-| 09 | Training & Development | `⬜ NOT STARTED` | LOW-MEDIUM | 5 | 02 | [09-training-development.md](modules/09-training-development.md) |
-| 10 | Documents & Compliance | `⬜ NOT STARTED` | MEDIUM | 6 | 02 | [10-documents-compliance.md](modules/10-documents-compliance.md) |
-| 11 | Reports & Analytics | `⬜ NOT STARTED` | HIGH | 6 | All | [11-reports-analytics.md](modules/11-reports-analytics.md) |
-| 12 | System Administration | `⬜ NOT STARTED` | HIGH | 6 | 01 | [12-system-administration.md](modules/12-system-administration.md) |
+| 04 | Attendance & Shift Management | `✅ COMPLETED` | HIGH | 2 | 02 | [04-attendance-shift.md](modules/04-attendance-shift.md) |
+| 05 | Leave Management | `✅ COMPLETED` | HIGH | 2 | 02, 04 | [05-leave-management.md](modules/05-leave-management.md) |
+| 06 | Recruitment & ATS | `✅ COMPLETED` | MEDIUM-HIGH | 3 | 01, 02 | [06-recruitment-ats.md](modules/06-recruitment-ats.md) |
+| 07 | Payroll & Compensation | `✅ COMPLETED` | CRITICAL | 4 | 02, 04 | [07-payroll-compensation.md](modules/07-payroll-compensation.md) |
+| 08 | Performance Management | `✅ COMPLETED` | MEDIUM | 5 | 02 | [08-performance-management.md](modules/08-performance-management.md) |
+| 09 | Training & Development | `✅ COMPLETED` | LOW-MEDIUM | 5 | 02 | [09-training-development.md](modules/09-training-development.md) |
+| 10 | Documents & Compliance | `✅ COMPLETED` | MEDIUM | 6 | 02 | [10-documents-compliance.md](modules/10-documents-compliance.md) |
+| 11 | Reports & Analytics | `✅ COMPLETED` | HIGH | 6 | All | [11-reports-analytics.md](modules/11-reports-analytics.md) |
+| 12 | System Administration | `✅ COMPLETED` | HIGH | 6 | 01 | [12-system-administration.md](modules/12-system-administration.md) |
 
 ---
 
@@ -76,6 +76,16 @@
 - Employee Form: reusable component, positions filtered by selected department
 - Dark/light/system theme toggle in header (localStorage-persisted, flash-free)
 
+### Module 07 — Payroll & Compensation ✅
+- Salary components (earning / deduction / tax), calculation types: fixed, percentage_of_basic, percentage_of_gross
+- Salary structures with component pivot (override_value per structure)
+- Employee salary assignments with effective_date history
+- PayrollService: 2-pass calculation (pass 1 = fixed + % of basic, pass 2 = % of gross)
+- Payroll runs: draft → approve → paid workflow
+- Payslip generation per employee with line items; regenerate support for draft runs
+- Individual payslip view with professional layout, print + Download PDF (browser print dialog)
+- Demo seeder: 10 components, 4 structures, salary assignments, 2 payroll runs
+
 ---
 
 ## Regional Features (Future — After Phase 4)
@@ -89,6 +99,6 @@
 
 ## Quick Stats
 
-- **Completed:** 4 / 13
+- **Completed:** 13 / 13
 - **In Progress:** 0 / 13
-- **Not Started:** 9 / 13
+- **Not Started:** 0 / 13

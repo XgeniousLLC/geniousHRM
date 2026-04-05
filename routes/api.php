@@ -1,6 +1,81 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\EmployeeController;
+use App\Http\Controllers\Api\V1\DepartmentController;
+use App\Http\Controllers\Api\V1\PositionController;
+use App\Http\Controllers\Api\V1\AttendanceController;
+use App\Http\Controllers\Api\V1\LeaveController;
+use App\Http\Controllers\Api\V1\PayrollController;
+use App\Http\Controllers\Api\V1\PerformanceController;
+use App\Http\Controllers\Api\V1\TrainingController;
+use App\Http\Controllers\Api\V1\ReportsController;
+
+// ══════════════════════════════════════════════════════════
+//  REST API v1 — Sanctum token auth
+// ══════════════════════════════════════════════════════════
+Route::prefix('v1')->group(function () {
+
+    // Public
+    Route::post('/auth/login', [AuthController::class, 'login']);
+
+    // Protected
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/auth/me',      [AuthController::class, 'me']);
+
+        // Employees
+        Route::apiResource('employees', EmployeeController::class);
+
+        // Org structure
+        Route::apiResource('departments', DepartmentController::class);
+        Route::apiResource('positions',   PositionController::class);
+
+        // Attendance
+        Route::get('attendance',                     [AttendanceController::class, 'index']);
+        Route::post('attendance/check-in',           [AttendanceController::class, 'checkIn']);
+        Route::post('attendance/check-out',          [AttendanceController::class, 'checkOut']);
+        Route::get('attendance/employee/{employee}', [AttendanceController::class, 'byEmployee']);
+
+        // Leave
+        Route::get('leave/types', [LeaveController::class, 'types']);
+        Route::apiResource('leave/requests', LeaveController::class)
+            ->parameters(['requests' => 'leaveRequest']);
+        Route::patch('leave/requests/{leaveRequest}/approve', [LeaveController::class, 'approve']);
+        Route::patch('leave/requests/{leaveRequest}/reject',  [LeaveController::class, 'reject']);
+
+        // Payroll
+        Route::get('payroll/runs',               [PayrollController::class, 'runs']);
+        Route::get('payroll/runs/{run}',         [PayrollController::class, 'showRun']);
+        Route::get('payroll/payslips',           [PayrollController::class, 'payslips']);
+        Route::get('payroll/payslips/{payslip}', [PayrollController::class, 'showPayslip']);
+
+        // Performance
+        Route::get('performance/cycles',           [PerformanceController::class, 'cycles']);
+        Route::get('performance/cycles/{cycle}',   [PerformanceController::class, 'showCycle']);
+        Route::get('performance/ratings',          [PerformanceController::class, 'ratings']);
+        Route::get('performance/ratings/{rating}', [PerformanceController::class, 'showRating']);
+
+        // Training
+        Route::get('training/courses',                             [TrainingController::class, 'courses']);
+        Route::get('training/courses/{course}',                    [TrainingController::class, 'showCourse']);
+        Route::get('training/sessions',                            [TrainingController::class, 'sessions']);
+        Route::get('training/enrollments',                         [TrainingController::class, 'enrollments']);
+        Route::post('training/enrollments',                        [TrainingController::class, 'enroll']);
+        Route::patch('training/enrollments/{enrollment}/complete', [TrainingController::class, 'complete']);
+
+        // Reports
+        Route::get('reports/headcount',  [ReportsController::class, 'headcount']);
+        Route::get('reports/attendance', [ReportsController::class, 'attendance']);
+        Route::get('reports/leave',      [ReportsController::class, 'leave']);
+        Route::get('reports/payroll',    [ReportsController::class, 'payroll']);
+    });
+});
+
+// ══════════════════════════════════════════════════════════
+//  Legacy / existing module routes below
+// ══════════════════════════════════════════════════════════
 
 /*
 |--------------------------------------------------------------------------

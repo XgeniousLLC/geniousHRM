@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useTheme, type Theme } from '@/hooks/useTheme';
-import type { PageProps } from '@/types';
+import type { AppNotification, PageProps } from '@/types';
 
 // ─── Nav config ───────────────────────────────────────────────────────────────
 
@@ -61,7 +61,7 @@ const navItems = [
     {
         group: 'Talent',
         items: [
-            { label: 'Recruitment', href: '/recruitment', icon: Briefcase },
+            { label: 'Recruitment', href: '/recruitment', icon: Briefcase  },
             { label: 'Performance', href: '/performance', icon: Star },
             { label: 'Training', href: '/training', icon: BookOpen },
         ],
@@ -77,7 +77,15 @@ const navItems = [
         items: [
             { label: 'Documents', href: '/documents', icon: FileText },
             { label: 'Reports', href: '/reports', icon: BarChart3 },
-            { label: 'Administration', href: '/admin', icon: Shield },
+        ],
+    },
+    {
+        group: 'Administration',
+        items: [
+            { label: 'Settings',            href: '/admin/settings',   icon: Settings },
+            { label: 'Users',               href: '/admin/users',      icon: Users },
+            { label: 'Roles & Permissions', href: '/admin/roles',      icon: Shield },
+            { label: 'Audit Log',           href: '/admin/audit-log',  icon: BarChart3 },
         ],
     },
 ];
@@ -85,15 +93,30 @@ const navItems = [
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 function Sidebar({ currentPath }: { currentPath: string }) {
+    const { app_settings } = usePage().props as any;
+    const appName = app_settings?.app_name ?? 'GeniusHRM';
+    const footerCopyright = app_settings?.footer_copyright ?? `© ${new Date().getFullYear()} GeniusHRM. All rights reserved.`;
+    const logoPath = app_settings?.logo_path;
+
     return (
         <aside className="flex h-screen w-60 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             {/* Brand */}
             <div className="flex h-16 items-center gap-3 px-5 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-sm">
-                    <span className="text-white text-sm font-bold">G</span>
-                </div>
-                <div>
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm leading-none">GeniusHRM</p>
+                {logoPath ? (
+                    <img
+                        src={`/storage/${logoPath}`}
+                        alt={appName}
+                        className="h-7 w-auto object-contain flex-shrink-0"
+                    />
+                ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 shadow-sm flex-shrink-0">
+                        <span className="text-white text-sm font-bold">
+                            {appName.charAt(0).toUpperCase()}
+                        </span>
+                    </div>
+                )}
+                <div className="min-w-0">
+                    <p className="font-semibold text-slate-900 dark:text-white text-sm leading-none truncate">{appName}</p>
                     <p className="text-slate-400 text-xs mt-0.5">HR Management</p>
                 </div>
             </div>
@@ -133,15 +156,9 @@ function Sidebar({ currentPath }: { currentPath: string }) {
                 ))}
             </nav>
 
-            {/* Bottom settings link */}
-            <div className="border-t border-slate-100 dark:border-slate-800 p-3">
-                <Link
-                    href="/admin/settings"
-                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
-                >
-                    <Settings size={16} />
-                    Settings
-                </Link>
+            {/* Footer copyright */}
+            <div className="border-t border-slate-100 dark:border-slate-800">
+                <p className="text-xs text-slate-400 px-3 py-3 leading-snug">{footerCopyright}</p>
             </div>
         </aside>
     );
@@ -185,7 +202,64 @@ function ThemeToggle() {
 
 // ─── Header ───────────────────────────────────────────────────────────────────
 
+function NotificationBell({ notifications, unreadCount }: { notifications: AppNotification[]; unreadCount: number }) {
+    function markAllRead() {
+        router.post('/notifications/mark-all-read', {}, { preserveScroll: true });
+    }
+    function visitAndRead(n: AppNotification) {
+        router.post(`/notifications/${n.id}/mark-read`, {}, {
+            preserveScroll: true,
+            onSuccess: () => { if (n.url) router.visit(n.url); },
+        });
+    }
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <Bell size={18} />
+                {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
+                )}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-80 p-0">
+                {/* Header */}
+                <div className="flex items-center justify-between px-3 py-2.5 border-b border-slate-100 dark:border-slate-800">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                        Notifications {unreadCount > 0 && <span className="ml-1 text-xs font-normal text-slate-400">({unreadCount} unread)</span>}
+                    </p>
+                    {unreadCount > 0 && (
+                        <button onClick={markAllRead} className="text-xs text-blue-600 hover:underline">
+                            Mark all read
+                        </button>
+                    )}
+                </div>
+
+                {/* List */}
+                {notifications.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-slate-400">No new notifications</div>
+                ) : (
+                    <div className="max-h-80 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800">
+                        {notifications.map((n) => (
+                            <button
+                                key={n.id}
+                                onClick={() => visitAndRead(n)}
+                                className="w-full text-left px-3 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors block"
+                            >
+                                <p className="text-sm font-medium text-slate-900 dark:text-white leading-snug">{n.title}</p>
+                                <p className="text-xs text-slate-500 mt-0.5 leading-snug">{n.message}</p>
+                                <p className="text-xs text-slate-400 mt-1">{n.created_at}</p>
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
 function Header({ user }: { user: PageProps['auth']['user'] }) {
+    const { notifications, unread_count } = usePage<PageProps>().props;
+
     function logout() {
         router.post('/logout');
     }
@@ -206,10 +280,7 @@ function Header({ user }: { user: PageProps['auth']['user'] }) {
                 <ThemeToggle />
 
                 {/* Notifications */}
-                <button className="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                    <Bell size={18} />
-                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500" />
-                </button>
+                <NotificationBell notifications={notifications} unreadCount={unread_count} />
 
                 {/* Divider */}
                 <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" />

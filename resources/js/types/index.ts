@@ -54,6 +54,14 @@ export interface ApiError {
     errors?: Record<string, string[]>;
 }
 
+export interface AppNotification {
+    id: string;
+    title: string;
+    message: string;
+    url: string | null;
+    created_at: string;
+}
+
 // Inertia shared props
 export interface PageProps {
     auth: {
@@ -64,4 +72,6 @@ export interface PageProps {
         error?: string;
         info?: string;
     };
+    notifications: AppNotification[];
+    unread_count: number;
 }
