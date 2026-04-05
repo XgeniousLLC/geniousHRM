@@ -3,6 +3,7 @@
 namespace Modules\Payroll\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\PayrollRun;
 use App\Models\Payslip;
 use Modules\Payroll\app\Services\PayrollService;
@@ -140,9 +141,15 @@ class PayrollController extends Controller
         return back()->with('success', 'Payroll regenerated.');
     }
 
-    public function showPayslip(PayrollRun $run, Payslip $payslip)
+    public function showPayslip(Request $request, PayrollRun $run, Payslip $payslip)
     {
         abort_if($payslip->payroll_run_id !== $run->id, 404);
+
+        $canManage = $request->user()->hasAnyPermission(['payroll.view', 'employees.create']);
+        if (!$canManage) {
+            $myEmployee = Employee::where('user_id', $request->user()->id)->first();
+            abort_if(!$myEmployee || $payslip->employee_id !== $myEmployee->id, 403);
+        }
         $payslip->load(['employee.department', 'employee.position', 'lines']);
 
         $monthName = Carbon::create($run->year, $run->month)->format('F Y');

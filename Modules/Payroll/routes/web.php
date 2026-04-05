@@ -9,10 +9,14 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'permission:payroll.view'])->group(function () {
     Route::get('/payroll',                                          [PayrollController::class, 'index'])->name('payroll.index');
     Route::get('/payroll/runs/{run}',                               [PayrollController::class, 'show'])->name('payroll.runs.show');
-    Route::get('/payroll/runs/{run}/payslips/{payslip}',            [PayrollController::class, 'showPayslip'])->name('payroll.payslips.show');
     Route::resource('/payroll/components', SalaryComponentController::class)->only(['index'])->parameters(['components' => 'component']);
     Route::resource('/payroll/structures', SalaryStructureController::class)->only(['index'])->parameters(['structures' => 'structure']);
     Route::get('/payroll/salaries',                                 [EmployeeSalaryController::class, 'index'])->name('payroll.salaries.index');
+});
+
+// Auth-only — employees can view their own payslip; managers can view any
+Route::middleware(['auth'])->group(function () {
+    Route::get('/payroll/runs/{run}/payslips/{payslip}', [PayrollController::class, 'showPayslip'])->name('payroll.payslips.show');
 });
 Route::middleware(['auth', 'permission:payroll.process'])->group(function () {
     Route::get('/payroll/runs/create',                              [PayrollController::class, 'create'])->name('payroll.runs.create');
