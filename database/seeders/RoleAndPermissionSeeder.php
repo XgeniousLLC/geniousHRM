@@ -71,7 +71,6 @@ class RoleAndPermissionSeeder extends Seeder
             ],
 
             'Employee' => [
-                'employees.view',
                 'attendance.view', 'attendance.create',
                 'leaves.view', 'leaves.apply',
                 'performance.view',
