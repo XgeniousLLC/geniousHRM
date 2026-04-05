@@ -24,7 +24,8 @@ class DashboardController extends Controller
     public function __invoke()
     {
         $user      = Auth::user();
-        $canManage = $user->hasAnyPermission(['employees.view', 'leaves.manage', 'leaves.approve', 'payroll.view']);
+        // Use permissions that only HR/Manager/Admin roles have — NOT employees.view (Employee role has it)
+        $canManage = $user->hasAnyPermission(['employees.create', 'leaves.manage', 'leaves.approve', 'payroll.view', 'admin.users']);
         $employee  = Employee::where('user_id', $user->id)->with(['department:id,name', 'position:id,name'])->first();
 
         // ── Employee self-service dashboard ────────────────────────────────────
