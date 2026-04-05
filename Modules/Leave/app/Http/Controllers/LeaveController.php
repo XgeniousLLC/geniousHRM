@@ -15,31 +15,59 @@ class LeaveController extends Controller
 {
     public function index(Request $request)
     {
+        $user       = Auth::user();
+        $canManage  = $user->hasAnyPermission(['leaves.manage', 'leaves.approve']);
+        $myEmployee = Employee::where('user_id', $user->id)->first();
+
         $status     = $request->get('status', 'all');
-        $employeeId = $request->get('employee_id');
 
         $query = LeaveRequest::with([
             'employee:id,first_name,last_name,employee_id',
             'leaveType:id,name,code,color',
         ])->orderBy('created_at', 'desc');
 
+        // Self-service users only see their own requests
+        if (!$canManage && $myEmployee) {
+            $query->where('employee_id', $myEmployee->id);
+        } elseif ($canManage && $request->get('employee_id')) {
+            $query->where('employee_id', $request->get('employee_id'));
+        }
+
         if ($status !== 'all') {
             $query->where('status', $status);
         }
-        if ($employeeId) {
-            $query->where('employee_id', $employeeId);
-        }
 
         $requests  = $query->get()->map(fn ($r) => $this->formatRequest($r));
-        $employees = Employee::orderBy('first_name')->get(['id', 'first_name', 'last_name', 'employee_id'])
-            ->map(fn ($e) => ['id' => $e->id, 'name' => $e->first_name . ' ' . $e->last_name, 'employee_id' => $e->employee_id]);
+        $employees = $canManage
+            ? Employee::orderBy('first_name')->get(['id', 'first_name', 'last_name', 'employee_id'])
+                ->map(fn ($e) => ['id' => $e->id, 'name' => $e->first_name . ' ' . $e->last_name, 'employee_id' => $e->employee_id])
+            : collect();
         $types     = LeaveType::where('is_active', true)->orderBy('name')->get(['id', 'name', 'code', 'color', 'days_allowed', 'allow_half_day']);
 
-        return Inertia::render('leave/Index', compact('requests', 'employees', 'types', 'status'));
+        return Inertia::render('leave/Index', [
+            'requests'   => $requests,
+            'employees'  => $employees,
+            'types'      => $types,
+            'status'     => $status,
+            'canManage'  => $canManage,
+            'myEmployee' => $myEmployee ? ['id' => $myEmployee->id, 'name' => $myEmployee->first_name . ' ' . $myEmployee->last_name] : null,
+        ]);
     }
 
     public function store(Request $request)
     {
+        $user      = Auth::user();
+        $canManage = $user->hasAnyPermission(['leaves.manage', 'leaves.approve']);
+
+        // Self-service: always use the authenticated user's own employee record
+        if (!$canManage) {
+            $myEmployee = Employee::where('user_id', $user->id)->first();
+            if (!$myEmployee) {
+                return back()->withErrors(['employee_id' => 'No employee record linked to your account. Contact HR.']);
+            }
+            $request->merge(['employee_id' => $myEmployee->id]);
+        }
+
         $data = $request->validate([
             'employee_id'     => 'required|exists:employees,id',
             'leave_type_id'   => 'required|exists:leave_types,id',

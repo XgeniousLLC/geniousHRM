@@ -5,12 +5,15 @@ namespace Modules\Attendance\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Holiday;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class HolidayController extends Controller
 {
     public function index()
     {
+        $canManage = Auth::user()->hasAnyPermission(['attendance.mark', 'employees.create']);
+
         $holidays = Holiday::orderBy('date')->get()->map(fn ($h) => [
             'id'          => $h->id,
             'name'        => $h->name,
@@ -20,7 +23,10 @@ class HolidayController extends Controller
             'description' => $h->description,
         ]);
 
-        return Inertia::render('attendance/holidays/Index', compact('holidays'));
+        return Inertia::render('attendance/holidays/Index', [
+            'holidays'   => $holidays,
+            'canManage'  => $canManage,
+        ]);
     }
 
     public function create()

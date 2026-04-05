@@ -29,6 +29,8 @@ interface Props {
     employees: Employee[];
     types: LeaveType[];
     status: string;
+    canManage: boolean;
+    myEmployee: { id: number; name: string } | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -44,9 +46,13 @@ const FILTERS = ['all', 'pending', 'approved', 'rejected', 'cancelled'];
 
 // ─── Leave Request form ───────────────────────────────────────────────────────
 
-function ApplyForm({ employees, types, onClose }: { employees: Employee[]; types: LeaveType[]; onClose: () => void }) {
+function ApplyForm({ employees, types, onClose, canManage, myEmployee }: {
+    employees: Employee[]; types: LeaveType[]; onClose: () => void;
+    canManage: boolean; myEmployee: { id: number; name: string } | null;
+}) {
     const { data, setData, post, processing, errors, reset } = useForm({
-        employee_id: '', leave_type_id: '', start_date: '', end_date: '',
+        employee_id: canManage ? '' : String(myEmployee?.id ?? ''),
+        leave_type_id: '', start_date: '', end_date: '',
         is_half_day: false, half_day_period: 'morning', reason: '',
     });
 
@@ -65,15 +71,18 @@ function ApplyForm({ employees, types, onClose }: { employees: Employee[]; types
             </CardHeader>
             <CardContent>
                 <form onSubmit={submit} className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    <div className="space-y-1.5">
-                        <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Employee *</Label>
-                        <select value={data.employee_id} onChange={(e) => setData('employee_id', e.target.value)}
-                            className="w-full border border-slate-200 dark:border-slate-700 rounded-lg px-3 h-9 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
-                            <option value="">Select employee</option>
-                            {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
-                        </select>
-                        {errors.employee_id && <p className="text-xs text-red-500">{errors.employee_id}</p>}
-                    </div>
+                    {/* Employee selector — only visible to managers/HR */}
+                    {canManage && (
+                        <div className="space-y-1.5">
+                            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Employee *</Label>
+                            <select value={data.employee_id} onChange={(e) => setData('employee_id', e.target.value)}
+                                className="w-full border border-slate-200 dark:border-slate-700 rounded-lg px-3 h-9 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                                <option value="">Select employee</option>
+                                {employees.map((e) => <option key={e.id} value={e.id}>{e.name}</option>)}
+                            </select>
+                            {errors.employee_id && <p className="text-xs text-red-500">{errors.employee_id}</p>}
+                        </div>
+                    )}
 
                     <div className="space-y-1.5">
                         <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">Leave Type *</Label>
@@ -180,7 +189,7 @@ function ActionModal({ leave, action, onClose }: { leave: LeaveRequest; action: 
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
-export default function LeaveIndex({ requests, employees, types, status }: Props) {
+export default function LeaveIndex({ requests, employees, types, status, canManage, myEmployee }: Props) {
     const [showForm, setShowForm]   = useState(false);
     const [actionTarget, setAction] = useState<{ leave: LeaveRequest; action: 'approve' | 'reject' } | null>(null);
 
@@ -210,9 +219,11 @@ export default function LeaveIndex({ requests, employees, types, status }: Props
                         <Link href="/leaves/calendar" className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                             Calendar
                         </Link>
-                        <Link href="/leave/types" className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                            Leave Types
-                        </Link>
+                        {canManage && (
+                            <Link href="/leave/types" className="text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                Leave Types
+                            </Link>
+                        )}
                         <Button size="sm" className="gap-1.5 bg-blue-600 hover:bg-blue-500" onClick={() => setShowForm(true)}>
                             <Plus size={14} /> Apply Leave
                         </Button>
@@ -220,7 +231,7 @@ export default function LeaveIndex({ requests, employees, types, status }: Props
                 </div>
 
                 {/* Apply form */}
-                {showForm && <ApplyForm employees={employees} types={types} onClose={() => setShowForm(false)} />}
+                {showForm && <ApplyForm employees={employees} types={types} onClose={() => setShowForm(false)} canManage={canManage} myEmployee={myEmployee} />}
 
                 {/* Status filter tabs */}
                 <div className="flex items-center gap-1 border-b border-slate-200 dark:border-slate-800">
@@ -283,7 +294,7 @@ export default function LeaveIndex({ requests, employees, types, status }: Props
 
                                         {/* Actions */}
                                         <div className="flex items-center gap-1 flex-shrink-0">
-                                            {r.status === 'pending' && (
+                                            {canManage && r.status === 'pending' && (
                                                 <>
                                                     <button
                                                         onClick={() => setAction({ leave: r, action: 'approve' })}

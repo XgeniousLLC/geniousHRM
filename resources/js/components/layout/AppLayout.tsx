@@ -21,6 +21,8 @@ import {
     Users,
     Clock,
     CalendarDays,
+    Wallet,
+    FolderOpen,
 } from 'lucide-react';
 
 import {
@@ -56,6 +58,14 @@ const NAV_CONFIG = [
         items: [
             { label: 'Attendance',        href: '/attendance', icon: Clock,        permission: 'attendance.view' },
             { label: 'Leave Management',  href: '/leaves',     icon: CalendarDays, permission: 'leaves.view' },
+            { label: 'Holidays',          href: '/holidays',   icon: CalendarDays, permission: 'attendance.view' },
+        ],
+    },
+    {
+        group: 'My Info',
+        items: [
+            { label: 'My Payslips',   href: '/my/payslips',  icon: Wallet,      permission: null },
+            { label: 'My Documents',  href: '/my/documents', icon: FolderOpen,  permission: null },
         ],
     },
     {
