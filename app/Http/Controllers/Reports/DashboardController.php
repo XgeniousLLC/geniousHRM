@@ -29,10 +29,11 @@ class DashboardController extends Controller
         $employee  = Employee::where('user_id', $user->id)->with(['department:id,name', 'position:id,name'])->first();
 
         // ── Employee self-service dashboard ────────────────────────────────────
-        if (!$canManage && $employee) {
+        // Always show personal dashboard for non-managers, even without a linked record
+        if (!$canManage) {
             return Inertia::render('Dashboard', [
                 'isEmployee'   => true,
-                'employeeData' => $this->employeeDashboard($employee),
+                'employeeData' => $employee ? $this->employeeDashboard($employee) : null,
             ]);
         }
 

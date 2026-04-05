@@ -197,6 +197,26 @@ function QuickAction({ label, href, icon: Icon, description }: { label: string; 
     );
 }
 
+// ─── No Employee Record ───────────────────────────────────────────────────────
+
+function NoEmployeeRecord() {
+    return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+            <div className="w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center mb-4">
+                <UserCheck size={28} className="text-amber-500" />
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">No Employee Record Linked</h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm max-w-md mb-6">
+                Your user account isn't linked to an employee profile yet. Please contact your HR administrator to set up your employee record.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-sm">
+                <QuickAction label="My Leaves"    href="/leaves"      icon={CalendarDays} description="View your leave requests" />
+                <QuickAction label="Attendance"   href="/attendance"  icon={Clock}        description="View your attendance" />
+            </div>
+        </div>
+    );
+}
+
 // ─── Employee Dashboard ───────────────────────────────────────────────────────
 
 function EmployeeDashboard({ data, userName }: { data: EmployeeData; userName: string }) {
@@ -670,8 +690,10 @@ export default function Dashboard() {
                     <Badge variant="secondary" className="text-xs px-3 py-1">{role}</Badge>
                 </div>
 
-                {isEmployee && employeeData
-                    ? <EmployeeDashboard data={employeeData} userName={user?.name ?? ''} />
+                {isEmployee
+                    ? employeeData
+                        ? <EmployeeDashboard data={employeeData} userName={user?.name ?? ''} />
+                        : <NoEmployeeRecord />
                     : <HRDashboard props={props} />
                 }
             </div>
