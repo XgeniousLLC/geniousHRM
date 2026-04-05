@@ -3,7 +3,7 @@ import {
     ArrowUpRight, BarChart3, BookOpen, Briefcase, Building2,
     CalendarCheck, CalendarDays, CheckCircle2, Clock, CreditCard,
     TrendingUp, Users, UserCheck, AlertCircle, MapPin, BadgeCheck,
-    Hourglass, XCircle, Coffee, Timer, CalendarClock,
+    Hourglass, XCircle, Coffee, Timer, CalendarClock, Settings,
 } from 'lucide-react';
 
 import AppLayout from '@/components/layout/AppLayout';
@@ -497,6 +497,9 @@ function HRDashboard({ props }: { props: Props }) {
     const { stats, headcountByDept = [], headcountTrend = [], attendanceTrend = [], leaveByType = [], employmentTypes = {}, genderBreakdown = {}, recentActivity = [] } = props;
     if (!stats) return null;
 
+    const permissions: string[] = (props.auth?.user as any)?.permissions ?? [];
+    const can = (p: string) => permissions.includes(p);
+
     const totalEmpTypes = Object.values(employmentTypes).reduce((a, b) => a + b, 0);
     const totalGender   = Object.values(genderBreakdown).reduce((a, b) => a + b, 0);
 
@@ -603,12 +606,14 @@ function HRDashboard({ props }: { props: Props }) {
                 <Card className="border-slate-200 dark:border-slate-700 dark:bg-slate-900">
                     <CardHeader className="border-b border-slate-100 dark:border-slate-800 px-5 py-3"><CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300">Quick Actions</CardTitle></CardHeader>
                     <CardContent className="px-4 py-3 space-y-1.5">
-                        <QuickAction label="Add Employee"    href="/employees/create" icon={Users}        description="Create a new employee record" />
-                        <QuickAction label="Mark Attendance" href="/attendance"        icon={Clock}        description="Record check-in / check-out" />
-                        <QuickAction label="Apply for Leave" href="/leaves"            icon={CalendarDays} description="Submit a leave request" />
-                        <QuickAction label="Run Payroll"     href="/payroll"           icon={CreditCard}   description="Process monthly payroll" />
-                        <QuickAction label="View Reports"    href="/reports"           icon={BarChart3}    description="Analytics and exports" />
-                        <QuickAction label="Post a Job"      href="/recruitment"       icon={Briefcase}    description="Create a new job opening" />
+                        {can('employees.create')   && <QuickAction label="Add Employee"      href="/employees/create"  icon={Users}        description="Create a new employee record" />}
+                        {can('attendance.mark')    && <QuickAction label="Mark Attendance"   href="/attendance"         icon={Clock}        description="Record check-in / check-out" />}
+                        {can('leaves.approve')     && <QuickAction label="Approve Leaves"    href="/leaves"             icon={CalendarDays} description="Review pending leave requests" />}
+                        {can('payroll.process')    && <QuickAction label="Run Payroll"       href="/payroll"            icon={CreditCard}   description="Process monthly payroll" />}
+                        {!can('payroll.process') && can('payroll.view') && <QuickAction label="View Payroll" href="/payroll" icon={CreditCard} description="View payroll runs and payslips" />}
+                        {can('recruitment.create') && <QuickAction label="Post a Job"        href="/recruitment"        icon={Briefcase}    description="Create a new job opening" />}
+                        {can('reports.view')       && <QuickAction label="View Reports"      href="/reports"            icon={BarChart3}    description="Analytics and exports" />}
+                        {can('admin.settings')     && <QuickAction label="System Settings"   href="/admin/settings"     icon={Settings}     description="Configure system settings" />}
                     </CardContent>
                 </Card>
             </div>
@@ -617,7 +622,9 @@ function HRDashboard({ props }: { props: Props }) {
             <Card className="border-slate-200 dark:border-slate-700 dark:bg-slate-900">
                 <CardHeader className="border-b border-slate-100 dark:border-slate-800 px-5 py-3 flex flex-row items-center justify-between">
                     <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-300">Recent Activity</CardTitle>
-                    <Link href="/admin/audit-log" className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">View all <ArrowUpRight size={11} /></Link>
+                    {can('admin.audit-logs') && (
+                        <Link href="/admin/audit-log" className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">View all <ArrowUpRight size={11} /></Link>
+                    )}
                 </CardHeader>
                 <CardContent className="p-0">
                     {recentActivity.length === 0 ? (
