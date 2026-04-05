@@ -146,12 +146,30 @@ export default function Login() {
                         </form>
 
                         {/* Demo credentials */}
-                        <div className="mt-6 p-3 rounded-lg bg-slate-700/30 border border-slate-600/30">
-                            <p className="text-xs text-slate-400 font-medium mb-2">Demo credentials:</p>
-                            <div className="space-y-1 text-xs text-slate-500">
-                                <p><span className="text-slate-400">Admin:</span> admin@geniushrm.test</p>
-                                <p><span className="text-slate-400">HR:</span> hr@geniushrm.test</p>
-                                <p><span className="text-slate-400">Password:</span> Admin@1234</p>
+                        <div className="mt-6 rounded-lg bg-slate-700/30 border border-slate-600/30 overflow-hidden">
+                            <div className="px-3 py-2 border-b border-slate-600/30">
+                                <p className="text-xs font-semibold text-slate-300">Demo Accounts</p>
+                                <p className="text-[10px] text-slate-500 mt-0.5">Password for all: <span className="text-slate-400 font-mono">Admin@1234</span></p>
+                            </div>
+                            <div className="divide-y divide-slate-700/40">
+                                {[
+                                    { role: 'Admin',      email: 'admin@geniushrm.test',    color: 'text-blue-400' },
+                                    { role: 'HR Manager', email: 'hr@geniushrm.test',       color: 'text-purple-400' },
+                                    { role: 'Manager',    email: 'manager@geniushrm.test',  color: 'text-emerald-400' },
+                                    { role: 'Employee',   email: 'employee@geniushrm.test', color: 'text-amber-400' },
+                                    { role: 'Recruiter',  email: 'recruiter@geniushrm.test',color: 'text-rose-400' },
+                                    { role: 'Finance',    email: 'finance@geniushrm.test',  color: 'text-teal-400' },
+                                ].map(({ role, email, color }) => (
+                                    <button
+                                        key={role}
+                                        type="button"
+                                        onClick={() => { setData('email', email); setData('password', 'Admin@1234'); }}
+                                        className="w-full flex items-center justify-between px-3 py-1.5 hover:bg-slate-700/40 transition-colors text-left group"
+                                    >
+                                        <span className={`text-xs font-medium ${color}`}>{role}</span>
+                                        <span className="text-[10px] text-slate-500 group-hover:text-slate-400 font-mono truncate max-w-[180px]">{email}</span>
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </CardContent>
