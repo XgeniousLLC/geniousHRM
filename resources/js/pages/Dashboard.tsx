@@ -255,22 +255,12 @@ function EmployeeDashboard({ data, userName }: { data: EmployeeData; userName: s
     return (
         <div className="space-y-6 max-w-5xl mx-auto">
 
-            {/* Header */}
-            <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                        {greeting()}, {data.name.split(' ')[0]} 👋
-                    </h1>
-                    <div className="flex flex-wrap items-center gap-2 mt-1.5 text-sm text-slate-500 dark:text-slate-400">
-                        {data.position && <span className="flex items-center gap-1"><Briefcase size={13} /> {data.position}</span>}
-                        {data.department && <span className="flex items-center gap-1"><Building2 size={13} /> {data.department}</span>}
-                        {data.date_of_joining && <span className="flex items-center gap-1"><MapPin size={13} /> Joined {data.date_of_joining}</span>}
-                        {tenureLabel && <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">{tenureLabel} tenure</span>}
-                    </div>
-                </div>
-                <Badge variant="secondary" className="text-xs px-3 py-1 shrink-0">
-                    {data.employee_id}
-                </Badge>
+            {/* Employee info sub-header */}
+            <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 -mt-2">
+                {data.position && <span className="flex items-center gap-1"><Briefcase size={13} /> {data.position}</span>}
+                {data.department && <span className="flex items-center gap-1"><Building2 size={13} /> {data.department}</span>}
+                {data.date_of_joining && <span className="flex items-center gap-1"><MapPin size={13} /> Joined {data.date_of_joining}</span>}
+                {tenureLabel && <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">{tenureLabel} tenure</span>}
             </div>
 
             {/* Today's status + month stats */}
@@ -679,7 +669,7 @@ export default function Dashboard() {
                 <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
                     <div>
                         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                            {greeting()}, {user?.name?.split(' ')[0]} 👋
+                            {greeting()}, {isEmployee && employeeData ? employeeData.name.split(' ')[0] : user?.name?.split(' ')[0]} 👋
                         </h1>
                         <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
                             {isEmployee
@@ -687,7 +677,9 @@ export default function Dashboard() {
                                 : 'Here\'s what\'s happening across your organization today.'}
                         </p>
                     </div>
-                    <Badge variant="secondary" className="text-xs px-3 py-1">{role}</Badge>
+                    <Badge variant="secondary" className="text-xs px-3 py-1">
+                        {isEmployee && employeeData ? employeeData.employee_id : role}
+                    </Badge>
                 </div>
 
                 {isEmployee
